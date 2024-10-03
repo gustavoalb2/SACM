@@ -48,7 +48,16 @@ Um sistema desenvolvido em **Python** utilizando **Tkinter** para interface grá
   - Consultas por especialidade.
   - Consultas canceladas e reprogramadas.
 
-### 7. Login e Controle de Acesso
+### 7. Cadastro de Unidades de Saúde
+- Formulário para cadastrar unidades de saúde com:
+  - Nome da unidade
+  - Endereço completo
+  - Telefone de contato
+  - Especialidades atendidas na unidade.
+- Armazenamento de dados de unidades de saúde no banco de dados.
+- Opção de vincular médicos e consultas a uma unidade de saúde específica.
+
+### 8. Login e Controle de Acesso
 - Sistema de autenticação com diferentes usuários:
   - **Administradores**: podem gerenciar médicos, pacientes e consultas.
 
