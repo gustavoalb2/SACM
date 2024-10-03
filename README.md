@@ -1,63 +1,68 @@
-# SACM
+# Sistema de Agendamento de Consultas Médicas
 
-Sistema de Agendamento de Consultas Médicas
+Um sistema desenvolvido em **Python** utilizando **Tkinter** para interface gráfica e **SQLite** como banco de dados, para agendar consultas médicas. O sistema permite que administradores cadastrem médicos, agendem consultas, gerenciem horários e consultem históricos de atendimento.
 
-Descrição:
-    Um sistema que permite aos usuários agendar consultas médicas com base na disponibilidade de médicos. O sistema deve armazenar informações dos pacientes, médicos consultas. Ele oferece uma interface para os administradores (clínicas ou recepcionistas) e/ou os próprios pacientes agendarem, visualizarem, editarem e cancelarem consultas.
+## Funcionalidades
 
-Funcionalidades:
-    Cadastro de Pacientes
-        Formulário para cadastrar novos pacientes com informações como:
-            Nome completo
-            Data de nascimento
-            CPF (opcional, dependendo da necessidade)
-            Contato (telefone, e-mail)
-            Endereço
-        Opção para editar ou remover dados do paciente.
-        Listas pacientes.
-        Integração com o banco de dados SQLite para armazenar as informações dos pacientes.
-    
-    Cadastro de Médicos
-        Formulário para cadastrar médicos disponíveis, com dados como:
-            Nome completo
-            Especialidade (pediatra, cardiologista, etc.)
-            Contato
-            Dias e horários disponíveis para consulta.
-        Possibilidade de adicionar e remover médicos.
-        Listar médicos.
-        Armazenamento das informações no banco de dados.
+### 1. Cadastro de Pacientes
+- Formulário para cadastrar novos pacientes com:
+  - Nome completo
+  - Data de nascimento
+  - CPF
+  - Contato (telefone, e-mail)
+  - Endereço
+- Edição e remoção de pacientes.
+- Armazenamento das informações no banco de dados SQLite.
 
-    Agendamento de Consultas
-        Interface onde o administrador pode:
-            Selecionar o médico desejado.
-            Escolher a data e o horário disponíveis.
-            Registrar o motivo ou observações sobre a consulta (sintomas, por exemplo).
-        Validação automática de horários para evitar conflitos entre consultas.
-        Opção para editar ou cancelar consultas já agendadas.
-        Armazenamento de todas as consultas agendadas no banco de dados SQLite.
+### 2. Cadastro de Médicos
+- Formulário para cadastrar médicos com:
+  - Nome completo
+  - Especialidade (pediatra, cardiologista, etc.)
+  - Contato
+  - Dias e horários disponíveis para consultas.
+- Edição e remoção de médicos.
+- Armazenamento dos dados no SQLite.
 
-    Consulta de Horários Disponíveis
-        Interface para verificar os horários disponíveis dos médicos.
-        Filtragem por especialidade ou nome do médico.
-        Listar dias e horários em que cada médico tem disponibilidade para consultas.
-    
-    Histórico de Consultas
-        Listagem de todas as consultas passadas e futuras de cada paciente.
-        Possibilidade de visualizar o histórico de um determinado paciente ou médico.
-        Armazenar o histórico de consultas no banco de dados SQLite para futuras referências.
-    
-    Banco de Dados (SQLite)
+### 3. Agendamento de Consultas
+- Interface para agendar consultas:
+  - Seleção do médico e horário disponível.
+  - Seleção do paciente.
+  - Motivo ou observações sobre a consulta.
+- Validação de conflitos de horário.
+- Edição ou cancelamento de consultas.
+- Armazenamento de consultas no SQLite.
 
-    Tabelas sugeridas:
-        Pacientes: ID, nome, data de nascimento, contato, endereço.
-        Médicos: ID, nome, especialidade, contato, disponibilidade.
-        Consultas: ID, paciente_id, medico_id, data, horário, observações, status (agendada, concluída, cancelada).
-        Usuários (para controle de login(administrativo)): ID, nome, e-mail, senha, nível de acesso (admin).
+### 4. Consulta de Horários Disponíveis
+- Verificação dos horários disponíveis dos médicos.
+- Filtros por especialidade e nome do médico.
+- Exibição dos dias e horários disponíveis.
 
-    Exemplo de Fluxo:
+### 5. Histórico de Consultas
+- Listagem de consultas passadas e futuras.
+- Histórico por paciente ou médico.
+- Armazenamento no banco de dados.
 
-    O administrador acessa o sistema.
-    O administrador escolhe o médico e a especialidade, e vê os horários disponíveis.
-    O administrador escolhe o horário e confirma o agendamento.
-    O administrador pode editar ou cancelar a consulta, se necessário.
-    O administrador pode visualizar todos os agendamentos e gerar relatórios conforme a necessidade.
+### 6. Relatórios de Consultas
+- Geração de relatórios administrativos:
+  - Consultas por médico.
+  - Consultas por especialidade.
+  - Consultas canceladas e reprogramadas.
+
+### 7. Login e Controle de Acesso
+- Sistema de autenticação com diferentes usuários:
+  - **Administradores**: podem gerenciar médicos, pacientes e consultas.
+
+## Estrutura do Banco de Dados (SQLite)
+
+- **Tabelas sugeridas**:
+   - **Pacientes**: ID, nome, data de nascimento, contato, endereço.
+   - **Médicos**: ID, nome, especialidade, contato, disponibilidade.
+   - **Consultas**: ID, paciente_id, medico_id, data, horário, observações, status (agendada, concluída, cancelada).
+   - **Usuários** (para controle de login): ID, nome, e-mail, senha, nível de acesso (admin/paciente).
+
+## Exemplo de Fluxo:
+   - O paciente (ou administrador) acessa o sistema.
+   - O paciente escolhe o médico e a especialidade, e vê os horários disponíveis.
+   - O paciente escolhe o horário e confirma o agendamento.
+   - O paciente pode editar ou cancelar a consulta, se necessário.
+   - O administrador pode visualizar todos os agendamentos e gerar relatórios conforme a necessidade.
