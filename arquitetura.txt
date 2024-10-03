@@ -1,0 +1,11 @@
+sistema-agendamento-consultas/
+│
+├── database/
+│   └── consultas.db          # Banco de dados SQLite
+├── src/
+│   ├── main.py               # Arquivo principal para iniciar o sistema
+│   ├── agendamento.py        # Módulo para agendamento de consultas
+│   ├── cadastro_paciente.py  # Módulo para cadastro de pacientes
+│   ├── cadastro_medico.py    # Módulo para cadastro de médicos
+│   └── login.py              # Módulo de autenticação
+└── README.md                 # Documentação do projeto
