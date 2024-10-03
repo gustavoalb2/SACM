@@ -17,7 +17,7 @@ Funcionalidades:
         Listas pacientes.
         Integração com o banco de dados SQLite para armazenar as informações dos pacientes.
     
-    Cadastro de Médicos
+Cadastro de Médicos
         Formulário para cadastrar médicos disponíveis, com dados como:
             Nome completo
             Especialidade (pediatra, cardiologista, etc.)
@@ -27,7 +27,7 @@ Funcionalidades:
         Listar médicos.
         Armazenamento das informações no banco de dados.
 
-    Agendamento de Consultas
+Agendamento de Consultas
         Interface onde o administrador pode:
             Selecionar o médico desejado.
             Escolher a data e o horário disponíveis.
@@ -36,26 +36,25 @@ Funcionalidades:
         Opção para editar ou cancelar consultas já agendadas.
         Armazenamento de todas as consultas agendadas no banco de dados SQLite.
 
-    Consulta de Horários Disponíveis
+Consulta de Horários Disponíveis
         Interface para verificar os horários disponíveis dos médicos.
         Filtragem por especialidade ou nome do médico.
         Listar dias e horários em que cada médico tem disponibilidade para consultas.
     
-    Histórico de Consultas
+Histórico de Consultas
         Listagem de todas as consultas passadas e futuras de cada paciente.
         Possibilidade de visualizar o histórico de um determinado paciente ou médico.
         Armazenar o histórico de consultas no banco de dados SQLite para futuras referências.
     
-    Banco de Dados (SQLite)
+Banco de Dados (SQLite)
 
-    Tabelas sugeridas:
+Tabelas sugeridas:
         Pacientes: ID, nome, data de nascimento, contato, endereço.
         Médicos: ID, nome, especialidade, contato, disponibilidade.
         Consultas: ID, paciente_id, medico_id, data, horário, observações, status (agendada, concluída, cancelada).
         Usuários (para controle de login(administrativo)): ID, nome, e-mail, senha, nível de acesso (admin).
 
-    Exemplo de Fluxo:
-
+Exemplo de Fluxo:
     O administrador acessa o sistema.
     O administrador escolhe o médico e a especialidade, e vê os horários disponíveis.
     O administrador escolhe o horário e confirma o agendamento.
