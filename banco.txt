@@ -21,12 +21,14 @@ CREATE TABLE consultas (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     paciente_id INTEGER,
     medico_id INTEGER,
+    unidade_saude_id INTEGER,
     data TEXT NOT NULL,
     horario TEXT NOT NULL,
     observacoes TEXT,
     status TEXT DEFAULT 'agendada',
     FOREIGN KEY (paciente_id) REFERENCES pacientes(id),
-    FOREIGN KEY (medico_id) REFERENCES medicos(id)
+    FOREIGN KEY (medico_id) REFERENCES medicos(id),
+    FOREIGN KEY (unidade_saude_id) REFERENCES unidades_saude(id)
 );
 CREATE TABLE usuarios (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,3 +37,11 @@ CREATE TABLE usuarios (
     senha TEXT NOT NULL,
     nivel_acesso TEXT NOT NULL -- 'admin' ou 'paciente'
 );
+CREATE TABLE unidades_saude (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    endereco TEXT NOT NULL,
+    telefone TEXT,
+    especialidades TEXT
+);
+
