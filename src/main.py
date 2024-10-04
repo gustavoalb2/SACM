@@ -72,9 +72,9 @@ class Tela:
         self.mnu_paciente.add_separator()
         self.mnu_paciente.add_command(label='Cadastrar paciente', command=self.cadastrar_paciente)
         
-        self.mnu_medico.add_command(label='Listar medico')
+        self.mnu_medico.add_command(label='Listar medico', command=self.listar_medicos)
         self.mnu_medico.add_separator()
-        self.mnu_medico.add_command(label='Cadastrar medico')
+        self.mnu_medico.add_command(label='Cadastrar medico', command=self.cadastrar_medico)
         
         self.mnu_agendamentos.add_command(label='Listar agendamentos')
         self.mnu_agendamentos.add_separator()
@@ -153,6 +153,70 @@ class Tela:
         
         self.bnt_voltar = ttk.Button(self.frm, text='Voltar', command=self.voltar, style='info')
         self.bnt_voltar.grid(row=6, column=0, columnspan=2, padx=10, ipadx=80)
+        
+    def listar_medicos(self):
+        self.limpar_tela()
+        self.janela.title('Listar Medicos')
+        self.janela.geometry('900x800')
+        
+        self.frm = ttk.Frame(self.janela)
+        self.frm.pack()
+        
+        colunas = ['ID','Nome','Especialidade','Telefone','Email']
+        self.tvw = ttk.Treeview(self.frm, columns=colunas, show='headings', height=20)
+        self.tvw.heading('ID', text='ID')
+        self.tvw.heading('Nome', text='Nome')
+        self.tvw.heading('Especialidade', text='Especialidade')
+        self.tvw.heading('Telefone', text='Telefone')
+        self.tvw.heading('Email', text='Email')
+        self.tvw.grid(row=0, column=0, padx=10, pady=10)
+        
+        self.tvw.column('ID', width=50)
+        self.tvw.column('Nome', width=200)
+        self.tvw.column('Especialidade', width=150)
+        self.tvw.column('Telefone', width=100)
+        self.tvw.column('Email', width=200)
+        
+        self.tvw.insert('', 'end', values=(1, 'Dr. Jose Sei la das quantas', 'Cardiologista', '(11) 99999-9999', 'Jose@gmail.com'))
+        
+        self.btn_voltar = ttk.Button(self.frm, text='Voltar', command=self.voltar, style='info')
+        self.btn_voltar.grid(row=1, column=0, ipadx=80)
+        
+    def cadastrar_medico(self):
+        self.limpar_tela()
+        self.janela.title('Cadastrar Medico')
+        self.janela.geometry('900x800')
+        
+        self.frm = ttk.Frame(self.janela)
+        self.frm.pack()
+        
+        self.label_nome = ttk.Label(self.frm, text='Nome:')
+        self.label_nome.grid(row=0, column=0, padx=10, pady=10)
+        self.entry_nome = ttk.Entry(self.frm, width=50)
+        self.entry_nome.grid(row=0, column=1, padx=10, pady=10)
+        
+        self.label_especialidade = ttk.Label(self.frm, text='Especialidade:')
+        self.label_especialidade.grid(row=1, column=0, padx=10, pady=10)
+        self.entry_especialidade = ttk.Entry(self.frm)
+        self.entry_especialidade.grid(row=1, column=1, sticky='w', padx=10, pady=10)
+        
+        self.label_telefone = ttk.Label(self.frm, text='Telefone:')
+        self.label_telefone.grid(row=2, column=0, padx=10, pady=10)
+        self.entry_telefone = ttk.Entry(self.frm)
+        self.entry_telefone.grid(row=2, column=1, sticky='w', padx=10, pady=10)
+        
+        self.label_email = ttk.Label(self.frm, text='Email:')
+        self.label_email.grid(row=3, column=0, padx=10, pady=10)
+        self.entry_email = ttk.Entry(self.frm, width=50)
+        self.entry_email.grid(row=3, column=1, padx=10, pady=10)
+        
+        self.btn_salvar = ttk.Button(self.frm, text='Salvar', style='success')
+        self.btn_salvar.grid(row=4, column=0, columnspan=2, padx=10, pady=10, ipadx=80)
+        
+        self.bnt_voltar = ttk.Button(self.frm, text='Voltar', command=self.voltar, style='info')
+        self.bnt_voltar.grid(row=5, column=0, columnspan=2, padx=10, ipadx=80)
+    
+    
         
     def mudar_tema(self):
         self.top_tema = ttk.Toplevel(self.janela)
