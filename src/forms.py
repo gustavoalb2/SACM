@@ -1,5 +1,6 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+import ttkbootstrap as ttk
+from tkinter import messagebox
 import sqlite3
 
 def cadastrar_paciente(nome, data_nascimento, cpf, telefone, email, endereco):
@@ -13,16 +14,16 @@ def cadastrar_paciente(nome, data_nascimento, cpf, telefone, email, endereco):
     conn.close()
 
 def criar_formulario_paciente(app):
-    janela = tk.Toplevel(app)
+    janela = ttk.Toplevel(app)
     janela.title("Cadastrar Paciente")
     janela.geometry("400x400")
 
     campos = ['Nome', 'Data de Nascimento', 'CPF', 'Telefone', 'Email', 'Endereço']
     entradas = {}
-    for campo in campos:
-        ttk.Label(janela, text=campo).pack(pady=5)
+    for i, campo in enumerate(campos):
+        ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
         entrada = ttk.Entry(janela)
-        entrada.pack(pady=5)
+        entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
         entradas[campo.lower()] = entrada
 
     ttk.Button(janela, text="Salvar", command=lambda: cadastrar_paciente(
@@ -32,7 +33,9 @@ def criar_formulario_paciente(app):
         entradas['telefone'].get(),
         entradas['email'].get(),
         entradas['endereço'].get()
-    )).pack(pady=20)
+    )).grid(row=len(campos), column=0, columnspan=2, pady=10)
+
+    janela.grid_columnconfigure(1, weight=1)
 
 def cadastrar_medico(nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario):
     conn = sqlite3.connect('sistema_agendamento.db')
@@ -45,16 +48,16 @@ def cadastrar_medico(nome, especialidade, telefone, email, disponibilidade_dias,
     conn.close()
 
 def criar_formulario_medico(app):
-    janela = tk.Toplevel(app)
+    janela = ttk.Toplevel(app)
     janela.title("Cadastrar Médico")
     janela.geometry("400x400")
 
     campos = ['Nome', 'Especialidade', 'Telefone', 'Email', 'Dias de Disponibilidade', 'Horário de Disponibilidade']
     entradas = {}
-    for campo in campos:
-        ttk.Label(janela, text=campo).pack(pady=5)
+    for i, campo in enumerate(campos):
+        ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
         entrada = ttk.Entry(janela)
-        entrada.pack(pady=5)
+        entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
         entradas[campo.lower()] = entrada
 
     ttk.Button(janela, text="Salvar", command=lambda: cadastrar_medico(
@@ -64,7 +67,8 @@ def criar_formulario_medico(app):
         entradas['email'].get(),
         entradas['dias de disponibilidade'].get(),
         entradas['horário de disponibilidade'].get()
-    )).pack(pady=20)
+    )).grid(row=len(campos), column=0, columnspan=2, pady=10)
+    janela.grid_columnconfigure(1, weight=1)
 
 def cadastrar_consulta(data, horario, observacoes, cod_paciente, cod_medico, cod_unidade):
     conn = sqlite3.connect('sistema_agendamento.db')
@@ -77,16 +81,16 @@ def cadastrar_consulta(data, horario, observacoes, cod_paciente, cod_medico, cod
     conn.close()
 
 def criar_formulario_consulta(app):
-    janela = tk.Toplevel(app)
+    janela = ttk.Toplevel(app)
     janela.title("Cadastrar Consulta")
     janela.geometry("400x400")
 
     campos = ['Data', 'Horário', 'Observações', 'Código do Paciente', 'Código do Médico', 'Código da Unidade']
     entradas = {}
-    for campo in campos:
-        ttk.Label(janela, text=campo).pack(pady=5)
+    for i, campo in enumerate(campos):
+        ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
         entrada = ttk.Entry(janela)
-        entrada.pack(pady=5)
+        entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
         entradas[campo.lower()] = entrada
 
     ttk.Button(janela, text="Salvar", command=lambda: cadastrar_consulta(
@@ -96,7 +100,8 @@ def criar_formulario_consulta(app):
         entradas['código do paciente'].get(),
         entradas['código do médico'].get(),
         entradas['código da unidade'].get()
-    )).pack(pady=20)
+    )).grid(row=len(campos), column=0, columnspan=2, pady=10)
+    janela.grid_columnconfigure(1, weight=1)
 
 def cadastrar_unidade(nome, endereco, telefone, especialidades):
     conn = sqlite3.connect('sistema_agendamento.db')
@@ -109,16 +114,16 @@ def cadastrar_unidade(nome, endereco, telefone, especialidades):
     conn.close()
 
 def criar_formulario_unidade(app):
-    janela = tk.Toplevel(app)
+    janela = ttk.Toplevel(app)
     janela.title("Cadastrar Unidade de Saúde")
     janela.geometry("400x400")
 
     campos = ['Nome', 'Endereço', 'Telefone', 'Especialidades']
     entradas = {}
-    for campo in campos:
-        ttk.Label(janela, text=campo).pack(pady=5)
+    for i, campo in enumerate(campos):
+        ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
         entrada = ttk.Entry(janela)
-        entrada.pack(pady=5)
+        entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
         entradas[campo.lower()] = entrada
 
     ttk.Button(janela, text="Salvar", command=lambda: cadastrar_unidade(
@@ -126,11 +131,13 @@ def criar_formulario_unidade(app):
         entradas['endereço'].get(),
         entradas['telefone'].get(),
         entradas['especialidades'].get()
-    )).pack(pady=20)
+    )).grid(row=len(campos), column=0, columnspan=2, pady=10)
+
+    janela.grid_columnconfigure(1, weight=1)
 
 
 def exibir_lista(app, dados, colunas, titulo):
-    janela = tk.Toplevel(app)
+    janela = ttk.Toplevel(app)
     janela.title(titulo)
     janela.geometry("600x400")
 
