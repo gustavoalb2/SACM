@@ -1,3 +1,4 @@
+from datetime import datetime
 import tkinter as tk
 import ttkbootstrap as ttk
 from tkinter import messagebox
@@ -22,13 +23,18 @@ def criar_formulario_paciente(app):
     entradas = {}
     for i, campo in enumerate(campos):
         ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
-        entrada = ttk.Entry(janela)
+        if campo == 'Data de Nascimento':
+            entrada = ttk.DateEntry(janela, dateformat='%Y-%m-%d',
+                            firstweekday=6, startdate=datetime(2024,12,10),
+                            bootstyle='danger')
+        else:
+            entrada = ttk.Entry(janela)
         entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
         entradas[campo.lower()] = entrada
-
+        
     ttk.Button(janela, text="Salvar", command=lambda: cadastrar_paciente(
         entradas['nome'].get(),
-        entradas['data de nascimento'].get(),
+        entradas['data de nascimento'].entry.get(),
         entradas['cpf'].get(),
         entradas['telefone'].get(),
         entradas['email'].get(),
@@ -73,12 +79,16 @@ def criar_formulario_medico(app):
 def cadastrar_consulta(data, horario, observacoes, cod_paciente, cod_medico, cod_unidade):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO Consulta (data, horario, observacoes, cod_paciente, cod_medico, cod_unidade)
-        VALUES (?, ?, ?, ?, ?, ?)
-    ''', (data, horario, observacoes, cod_paciente, cod_medico, cod_unidade))
-    conn.commit()
-    conn.close()
+    if data == '' or horario == '':
+            messagebox.showerror('Erro', 'Preencha todos os campos')
+    else:
+            cursor.execute('''
+                INSERT INTO Consulta (data, horario, observacoes, cod_paciente, cod_medico, cod_unidade)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (data, horario, observacoes, cod_paciente, cod_medico, cod_unidade))
+            conn.commit()
+            conn.close()
+            messagebox.showinfo('Sucesso', 'Cliente cadastrado com sucesso')
 
 def criar_formulario_consulta(app):
     janela = ttk.Toplevel(app)
@@ -89,19 +99,24 @@ def criar_formulario_consulta(app):
     entradas = {}
     for i, campo in enumerate(campos):
         ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
-        entrada = ttk.Entry(janela)
+        if campo == 'Data':
+            entrada = ttk.DateEntry(janela, dateformat='%Y-%m-%d',
+                            firstweekday=6, startdate=datetime(2024,12,10),
+                            bootstyle='danger')
+        else:
+            entrada = ttk.Entry(janela)
         entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
         entradas[campo.lower()] = entrada
 
     ttk.Button(janela, text="Salvar", command=lambda: cadastrar_consulta(
-        entradas['data'].get(),
+        entradas['data'].entry.get(),
         entradas['horário'].get(),
         entradas['observações'].get(),
         entradas['código do paciente'].get(),
         entradas['código do médico'].get(),
         entradas['código da unidade'].get()
     )).grid(row=len(campos), column=0, columnspan=2, pady=10)
-    janela.grid_columnconfigure(1, weight=1)
+    janela.grid_columnconfigure(1, weight=1) 
 
 def cadastrar_unidade(nome, endereco, telefone, especialidades):
     conn = sqlite3.connect('sistema_agendamento.db')
@@ -132,8 +147,9 @@ def criar_formulario_unidade(app):
         entradas['telefone'].get(),
         entradas['especialidades'].get()
     )).grid(row=len(campos), column=0, columnspan=2, pady=10)
-
     janela.grid_columnconfigure(1, weight=1)
+    btn_voltar = ttk.Button(janela, text='Voltar', command=lambda: fechar_janela(app))
+    btn_voltar.grid(row=len(campos)+1, column=0, columnspan=2, pady=10)
 
 
 def exibir_lista(app, dados, colunas, titulo):
@@ -186,3 +202,14 @@ def listar_unidades(app):
     conn.close()
     colunas = ['ID', 'Nome', 'Endereço', 'Telefone', 'Especialidades']
     exibir_lista(app, unidades, colunas, 'Listar Unidades de Saúde')
+
+def limpar_tela(app):
+        for widget in app.winfo_children():
+            widget.destroy()
+            
+def voltar(app):
+        limpar_tela(app)
+        app.__init__(app)
+def fechar_janela(janela):
+            janela.destroy()
+            janela.protocol("WM_DELETE_WINDOW", janela.destroy)
