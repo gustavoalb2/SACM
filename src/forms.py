@@ -1,5 +1,4 @@
 from datetime import datetime
-from datetime import datetime
 import tkinter as tk
 import ttkbootstrap as ttk
 from tkinter import messagebox
@@ -215,8 +214,8 @@ def limpar_tela(app):
         widget.destroy()
             
 def voltar(app):
-        limpar_tela(app)
-        app.__init__(app)
+    limpar_tela(app)
+    app.__init__(app)
         
 def fechar_janela(janela):
     janela.destroy()
