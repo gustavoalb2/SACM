@@ -4,7 +4,7 @@ import ttkbootstrap as ttk
 from tkinter import messagebox
 import sqlite3
 
-def cadastrar_paciente(nome, data_nascimento, cpf, telefone, email, endereco):
+def cadastrar_paciente(nome, data_nascimento, cpf, telefone, email, endereco,janela):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
     cursor.execute('''
@@ -13,6 +13,8 @@ def cadastrar_paciente(nome, data_nascimento, cpf, telefone, email, endereco):
     ''', (nome, data_nascimento, cpf, telefone, email, endereco))
     conn.commit()
     conn.close()
+    messagebox.showinfo('Sucesso', 'Paciente cadastrado com sucesso!')
+    fechar_janela(janela)
 
 def criar_formulario_paciente(app):
     janela = ttk.Toplevel(app)
@@ -31,21 +33,22 @@ def criar_formulario_paciente(app):
             entrada = ttk.Entry(janela)
         entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
         entradas[campo.lower()] = entrada
-        
+
     ttk.Button(janela, text="Salvar",width=20, command=lambda: cadastrar_paciente(
         entradas['nome'].get(),
         entradas['data de nascimento'].entry.get(),
         entradas['cpf'].get(),
         entradas['telefone'].get(),
         entradas['email'].get(),
-        entradas['endereço'].get()
+        entradas['endereço'].get(),
+        janela
     )).grid(row=len(campos), column=0, columnspan=2, pady=10)
     btn_voltar = ttk.Button(janela, text='Voltar', command=lambda: fechar_janela(janela), width=20)
     btn_voltar.grid(row=len(campos)+1, column=0, columnspan=2)
 
     janela.grid_columnconfigure(1, weight=1)
 
-def cadastrar_medico(nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario):
+def cadastrar_medico(nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario, janela):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
     cursor.execute('''
@@ -54,6 +57,8 @@ def cadastrar_medico(nome, especialidade, telefone, email, disponibilidade_dias,
     ''', (nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario))
     conn.commit()
     conn.close()
+    messagebox.showinfo('Sucesso', 'Médico cadastrado com sucesso!')
+    fechar_janela(janela)
 
 def criar_formulario_medico(app):
     janela = ttk.Toplevel(app)
@@ -74,13 +79,14 @@ def criar_formulario_medico(app):
         entradas['telefone'].get(),
         entradas['email'].get(),
         entradas['dias de disponibilidade'].get(),
-        entradas['horário de disponibilidade'].get()
+        entradas['horário de disponibilidade'].get(),
+        janela
     )).grid(row=len(campos), column=0, columnspan=2, pady=10)
     btn_voltar = ttk.Button(janela, text='Voltar', width=20, command=lambda: fechar_janela(janela))
     btn_voltar.grid(row=len(campos)+1, column=0, columnspan=2)
     janela.grid_columnconfigure(1, weight=1)
 
-def cadastrar_consulta(data, horario, observacoes, cod_paciente, cod_medico, cod_unidade):
+def cadastrar_consulta(data, horario, observacoes, cod_paciente, cod_medico, cod_unidade, janela):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
     if data == '' or horario == '':
@@ -92,7 +98,8 @@ def cadastrar_consulta(data, horario, observacoes, cod_paciente, cod_medico, cod
             ''', (data, horario, observacoes, cod_paciente, cod_medico, cod_unidade))
             conn.commit()
             conn.close()
-            messagebox.showinfo('Sucesso', 'Cliente cadastrado com sucesso')
+            messagebox.showinfo('Sucesso', 'Consulta cadastrada com sucesso!')
+            fechar_janela(janela)
 
 def criar_formulario_consulta(app):
     janela = ttk.Toplevel(app)
@@ -118,13 +125,14 @@ def criar_formulario_consulta(app):
         entradas['observações'].get(),
         entradas['código do paciente'].get(),
         entradas['código do médico'].get(),
-        entradas['código da unidade'].get()
+        entradas['código da unidade'].get(),
+        janela
     )).grid(row=len(campos), column=0, columnspan=2, pady=10)
     btn_voltar = ttk.Button(janela, text='Voltar', width=20, command=lambda: fechar_janela(janela))
     btn_voltar.grid(row=len(campos)+1, column=0, columnspan=2)
-    janela.grid_columnconfigure(1, weight=1) 
+    janela.grid_columnconfigure(1, weight=1)
 
-def cadastrar_unidade(nome, endereco, telefone, especialidades):
+def cadastrar_unidade(nome, endereco, telefone, especialidades, janela):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
     cursor.execute('''
@@ -133,6 +141,8 @@ def cadastrar_unidade(nome, endereco, telefone, especialidades):
     ''', (nome, endereco, telefone, especialidades))
     conn.commit()
     conn.close()
+    messagebox.showinfo('Sucesso', 'Unidade cadastrada com sucesso!')
+    fechar_janela(janela)
 
 def criar_formulario_unidade(app):
     janela = ttk.Toplevel(app)
@@ -151,7 +161,8 @@ def criar_formulario_unidade(app):
         entradas['nome'].get(),
         entradas['endereço'].get(),
         entradas['telefone'].get(),
-        entradas['especialidades'].get()
+        entradas['especialidades'].get(),
+        janela
     )).grid(row=len(campos), column=0, columnspan=2, pady=10)
     janela.grid_columnconfigure(1, weight=1)
     btn_voltar = ttk.Button(janela, text='Voltar', width=20, command=lambda: fechar_janela(janela))
@@ -212,10 +223,10 @@ def listar_unidades(app):
 def limpar_tela(app):
     for widget in app.winfo_children():
         widget.destroy()
-            
+
 def voltar(app):
     limpar_tela(app)
     app.__init__(app)
-        
+
 def fechar_janela(janela):
     janela.destroy()
