@@ -14,7 +14,6 @@ def cadastrar_paciente(nome, data_nascimento, cpf, telefone, email, endereco,jan
     conn.commit()
     conn.close()
     messagebox.showinfo('Sucesso', 'Paciente cadastrado com sucesso!')
-    fechar_janela(janela)
 
 def criar_formulario_paciente(app):
     janela = ttk.Toplevel(app)
@@ -26,8 +25,8 @@ def criar_formulario_paciente(app):
     for i, campo in enumerate(campos):
         ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
         if campo == 'Data de Nascimento':
-            entrada = ttk.DateEntry(janela, dateformat='%Y-%m-%d',
-                            firstweekday=6, startdate=datetime(2024,12,10),
+            entrada = ttk.DateEntry(janela, dateformat='%d-%m-%Y',
+                            firstweekday=6,
                             bootstyle='danger')
         else:
             entrada = ttk.Entry(janela)
@@ -111,8 +110,8 @@ def criar_formulario_consulta(app):
     for i, campo in enumerate(campos):
         ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
         if campo == 'Data':
-            entrada = ttk.DateEntry(janela, dateformat='%Y-%m-%d',
-                            firstweekday=6, startdate=datetime(2024,12,10),
+            entrada = ttk.DateEntry(janela, dateformat='%d-%m-%Y',
+                            firstweekday=6,
                             bootstyle='danger')
         else:
             entrada = ttk.Entry(janela)
@@ -172,7 +171,6 @@ def criar_formulario_unidade(app):
 def exibir_lista(app, dados, colunas, titulo):
     janela = ttk.Toplevel(app)
     janela.title(titulo)
-    janela.geometry("600x400")
 
     tree = ttk.Treeview(janela, columns=colunas, show='headings')
     for col in colunas:
@@ -183,6 +181,129 @@ def exibir_lista(app, dados, colunas, titulo):
         tree.insert('', tk.END, values=item)
 
     tree.pack(fill=tk.BOTH, expand=True)
+    
+    # Frame para os botões
+    frame_botoes = tk.Frame(janela)
+    frame_botoes.pack(fill=tk.X, pady=10)
+
+    if titulo == 'Listar Pacientes':
+        btn_editar = tk.Button(frame_botoes, text="Editar", command=lambda: editar_paciente(tree))
+        btn_editar.pack(side=tk.LEFT, padx=5, ipadx=20)
+
+        btn_excluir = tk.Button(frame_botoes, text="Excluir", command=lambda: excluir_paciente(tree))
+        btn_excluir.pack(side=tk.LEFT, padx=5, ipadx=20)
+
+        btn_inserir = tk.Button(frame_botoes, text="Inserir", command=lambda: criar_formulario_paciente(app))
+        btn_inserir.pack(side=tk.LEFT, padx=5, ipadx=20)
+    
+        btn_voltar = tk.Button(frame_botoes, text="Voltar", command=lambda: fechar_janela(janela))
+        btn_voltar.pack(side=tk.RIGHT, padx=5, ipadx=20)
+        
+    if titulo == 'Listar Médicos':
+        btn_editar = tk.Button(frame_botoes, text="Editar", command=lambda: editar_medico(tree))
+        btn_editar.pack(side=tk.LEFT, padx=5, ipadx=20)
+
+        btn_excluir = tk.Button(frame_botoes, text="Excluir", command=lambda: excluir_medico(tree))
+        btn_excluir.pack(side=tk.LEFT, padx=5, ipadx=20)
+
+        btn_inserir = tk.Button(frame_botoes, text="Inserir", command=lambda: criar_formulario_medico(app))
+        btn_inserir.pack(side=tk.LEFT, padx=5, ipadx=20)
+
+        btn_voltar = tk.Button(frame_botoes, text="Voltar", command=lambda: fechar_janela(janela))
+        btn_voltar.pack(side=tk.RIGHT, padx=5, ipadx=20)
+    if titulo == 'Listar Consultas':
+        btn_editar = tk.Button(frame_botoes, text="Editar", command=lambda: editar_consulta(tree))
+        btn_editar.pack(side=tk.LEFT, padx=5, ipadx=20)
+
+        btn_excluir = tk.Button(frame_botoes, text="Excluir", command=lambda: excluir_consulta(tree))
+        btn_excluir.pack(side=tk.LEFT, padx=5, ipadx=20)
+
+        btn_inserir = tk.Button(frame_botoes, text="Inserir", command=lambda: criar_formulario_consulta(app))
+        btn_inserir.pack(side=tk.LEFT, padx=5, ipadx=20)
+
+        btn_voltar = tk.Button(frame_botoes, text="Voltar", command=lambda: fechar_janela(janela))
+        btn_voltar.pack(side=tk.RIGHT, padx=5, ipadx=20)
+    if titulo == 'Listar Unidades de Saúde':
+        btn_editar = tk.Button(frame_botoes, text="Editar", command=lambda: editar_unidade(tree))
+        btn_editar.pack(side=tk.LEFT, padx=5, ipadx=20)
+
+        btn_excluir = tk.Button(frame_botoes, text="Excluir", command=lambda: excluir_unidade(tree))
+        btn_excluir.pack(side=tk.LEFT, padx=5, ipadx=20)
+
+        btn_inserir = tk.Button(frame_botoes, text="Inserir", command=lambda: criar_formulario_unidade(app))
+        btn_inserir.pack(side=tk.LEFT, padx=5, ipadx=20)
+
+        btn_voltar = tk.Button(frame_botoes, text="Voltar", command=lambda: fechar_janela(janela))
+        btn_voltar.pack(side=tk.RIGHT, padx=5, ipadx=20)
+def editar_paciente(tree):
+    selecionado = tree.selection()
+    if not selecionado:
+        messagebox.showerror('Erro', 'Selecione um paciente para editar')
+        return
+    
+    # Obtém os dados do paciente selecionado
+    item = tree.item(selecionado)
+    paciente = item['values']
+    cod_paciente = paciente[0]  # Supondo que o cod_paciente é o primeiro valor
+
+    janela = tk.Toplevel()
+    janela.title("Editar Paciente")
+    janela.geometry("400x400")
+
+    campos = ['Nome', 'Data de Nascimento', 'CPF', 'Telefone', 'Email', 'Endereço']
+    entradas = {}
+    for i, campo in enumerate(campos):
+        ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
+        entrada = ttk.Entry(janela)
+        entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
+        entradas[campo.lower()] = entrada
+
+    # Mapeia os valores do paciente para os campos correspondentes
+    entradas['nome'].insert(0, paciente[1])  # Nome
+    entradas['data de nascimento'].insert(0, paciente[2])  # Data de Nascimento
+    entradas['cpf'].insert(0, paciente[3])  # CPF
+    entradas['telefone'].insert(0, paciente[4])  # Telefone
+    entradas['email'].insert(0, paciente[5])  # Email
+    entradas['endereço'].insert(0, paciente[6])  # Endereço
+
+    ttk.Button(janela, text="Salvar", width=20, command=lambda: confirm_edit_paciente(
+        cod_paciente,
+        entradas['nome'].get(),
+        entradas['data de nascimento'].get(),
+        entradas['cpf'].get(),
+        entradas['telefone'].get(),
+        entradas['email'].get(),
+        entradas['endereço'].get(),
+        janela
+    )).grid(row=len(campos), column=0, columnspan=2, pady=10)
+    btn_voltar = ttk.Button(janela, text='Voltar', command=lambda: fechar_janela(janela), width=20)
+    btn_voltar.grid(row=len(campos)+1, column=0, columnspan=2)
+
+    janela.grid_columnconfigure(1, weight=1)
+    
+def confirm_edit_paciente(cod_paciente, nome, data_nascimento, cpf, telefone, email, endereco, janela):
+    conn = sqlite3.connect('sistema_agendamento.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        UPDATE Paciente
+        SET nome = ?, data_nascimento = ?, cpf = ?, telefone = ?, email = ?, endereco = ?
+        WHERE cod_paciente = ?
+    ''', (nome, data_nascimento, cpf, telefone, email, endereco, cod_paciente))
+    conn.commit()
+    conn.close()
+    messagebox.showinfo('Sucesso', 'Paciente atualizado com sucesso!')
+    fechar_janela(janela)
+    
+def excluir_paciente(tree):
+    selected_item = tree.selection()
+    if not selected_item:
+        messagebox.showerror('Erro', 'Selecione um paciente para excluir')
+        return
+    if selected_item:
+        item = tree.item(selected_item)
+        paciente = item['values']
+        # Lógica para excluir o paciente
+        print(f"Excluir paciente: {paciente}")
 
 def listar_pacientes(app):
     conn = sqlite3.connect('sistema_agendamento.db')
@@ -192,7 +313,76 @@ def listar_pacientes(app):
     conn.close()
     colunas = ['ID', 'Nome', 'Data Nasc.', 'CPF', 'Telefone', 'Email', 'Endereço']
     exibir_lista(app, pacientes, colunas, 'Listar Pacientes')
+    
+def editar_medico(tree):
+    selecionado = tree.selection()
+    if not selecionado:
+        messagebox.showerror('Erro', 'Selecione um medico para editar')
+        return
+    
+    # Obtém os dados do paciente selecionado
+    item = tree.item(selecionado)
+    medico = item['values']
+    cod_medico = medico[0]  # Supondo que o cod_paciente é o primeiro valor
 
+    janela = tk.Toplevel()
+    janela.title("Editar Medico")
+    janela.geometry("400x400")
+    
+    campos = ['Nome', 'Especialidade', 'Telefone', 'Email', 'Dias de Disponibilidade', 'Horário de Disponibilidade']
+    entradas = {}
+    for i, campo in enumerate(campos):
+        ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
+        entrada = ttk.Entry(janela)
+        entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
+        entradas[campo.lower()] = entrada
+        
+    # Mapeia os valores do paciente para os campos correspondentes
+    entradas['nome'].insert(0, medico[1])  # Nome
+    entradas['especialidade'].insert(0, medico[2])  # Data de Nascimento
+    entradas['telefone'].insert(0, medico[3])  # CPF
+    entradas['email'].insert(0, medico[4])  # Telefone
+    entradas['dias de disponibilidade'].insert(0, medico[5])  # Email
+    entradas['horário de disponibilidade'].insert(0, medico[6])  # Endereço
+
+    ttk.Button(janela, text="Salvar", width=20, command=lambda: confirm_edit_medico(
+        cod_medico,
+        entradas['nome'].get(),
+        entradas['especialidade'].get(),
+        entradas['telefone'].get(),
+        entradas['email'].get(),
+        entradas['dias de disponibilidade'].get(),
+        entradas['horário de disponibilidade'].get(),
+        janela
+    )).grid(row=len(campos), column=0, columnspan=2, pady=10)
+    btn_voltar = ttk.Button(janela, text='Voltar', width=20, command=lambda: fechar_janela(janela))
+    btn_voltar.grid(row=len(campos)+1, column=0, columnspan=2)
+    janela.grid_columnconfigure(1, weight=1)
+
+def confirm_edit_medico(cod_medico, nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario, janela):
+    conn = sqlite3.connect('sistema_agendamento.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        UPDATE Medico
+        SET nome = ?, especialidade = ?, telefone = ?, email = ?, disponibilidade_dias = ?, disponibilidade_horario = ?
+        WHERE cod_medico = ?
+    ''', (nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario, cod_medico))
+    conn.commit()
+    conn.close()
+    messagebox.showinfo('Sucesso', 'Médico atualizado com sucesso!')
+    fechar_janela(janela)   
+    
+def excluir_medico(tree):
+    selected_item = tree.selection()
+    if not selected_item:
+        messagebox.showerror('Erro', 'Selecione um medico para excluir')
+        return
+    if selected_item:
+        item = tree.item(selected_item)
+        medico = item['values']
+        # Lógica para excluir o medico
+        print(f"Excluir medico: {medico}") 
+    
 def listar_medicos(app):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
@@ -226,7 +416,6 @@ def limpar_tela(app):
 
 def voltar(app):
     limpar_tela(app)
-    app.__init__(app)
-
+    
 def fechar_janela(janela):
     janela.destroy()
