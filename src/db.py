@@ -23,8 +23,8 @@ def criar_banco_de_dados():
             especialidade TEXT,
             telefone TEXT,
             email TEXT,
-            disponibilidade_dias TEXT,
-            disponibilidade_horario TEXT
+            disponibilidade_dias DATE,
+            disponibilidade_horario DATE
         )
     ''')
 
