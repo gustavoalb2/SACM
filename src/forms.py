@@ -38,6 +38,8 @@ def exibir_lista(app, dados, colunas, titulo):
         btn_voltar.pack(side=tk.RIGHT, padx=5, ipadx=20)
         
     if titulo == 'Listar Médicos':
+        tree.column('Disponibilidade Dias', width=150)
+        tree.column('Disponibilidade Horário', width=150)
         btn_editar = ttk.Button(frame_botoes, style='warning',text="Editar", command=lambda: editar_medico(tree))
         btn_editar.pack(side=tk.LEFT, padx=5, ipadx=20)
 
@@ -124,7 +126,7 @@ def listar_pacientes(app):
     cursor.execute('SELECT * FROM Paciente')
     pacientes = cursor.fetchall()
     conn.close()
-    colunas = ['ID', 'Nome', 'Data Nasc.', 'CPF', 'Telefone', 'Email', 'Endereço']
+    colunas = ['ID', 'Nome', 'Data Nasc.', 'CPF', 'Telefone', 'Email', 'Endereço', 'Status']
     exibir_lista(app, pacientes, colunas, 'Listar Pacientes')
 def editar_paciente(tree):
     selecionado = tree.selection()
@@ -237,7 +239,7 @@ def listar_medicos(app):
     cursor.execute('SELECT * FROM Medico')
     medicos = cursor.fetchall()
     conn.close()
-    colunas = ['ID', 'Nome', 'Especialidade', 'Telefone', 'Email', 'Disponibilidade Dias', 'Disponibilidade Horário']
+    colunas = ['ID', 'Nome', 'Especialidade', 'Telefone', 'Email', 'Disponibilidade Dias', 'Disponibilidade Horário', 'Status']
     exibir_lista(app, medicos, colunas, 'Listar Médicos')
 def editar_medico(tree):
     selecionado = tree.selection()
@@ -283,6 +285,7 @@ def editar_medico(tree):
     btn_voltar = ttk.Button(janela, text='Voltar', width=20, command=lambda: fechar_janela(janela))
     btn_voltar.grid(row=len(campos)+1, column=0, columnspan=2)
     janela.grid_columnconfigure(1, weight=1)
+    
 def confirm_edit_medico(cod_medico, nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario, janela):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
@@ -295,6 +298,7 @@ def confirm_edit_medico(cod_medico, nome, especialidade, telefone, email, dispon
     conn.close()
     messagebox.showinfo('Sucesso', 'Médico atualizado com sucesso!')
     fechar_janela(janela)    
+    
 def excluir_medico(tree):
     selected_item = tree.selection()
     if not selected_item:
@@ -321,6 +325,7 @@ def cadastrar_consulta(data, horario, observacoes, cod_paciente, cod_medico, cod
             conn.close()
             messagebox.showinfo('Sucesso', 'Consulta cadastrada com sucesso!')
             fechar_janela(janela)
+            
 def criar_formulario_consulta(app):
     janela = ttk.Toplevel(app)
     janela.title("Cadastrar Consulta")
@@ -351,13 +356,14 @@ def criar_formulario_consulta(app):
     btn_voltar = ttk.Button(janela, text='Voltar', width=20, command=lambda: fechar_janela(janela))
     btn_voltar.grid(row=len(campos)+1, column=0, columnspan=2)
     janela.grid_columnconfigure(1, weight=1)
+    
 def listar_consultas(app):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM Consulta')
     consultas = cursor.fetchall()
     conn.close()
-    colunas = ['ID', 'Data', 'Horário', 'Observações', 'Paciente ID', 'Médico ID', 'Unidade ID']
+    colunas = ['ID', 'Data', 'Horário', 'Observações', 'Paciente ID', 'Médico ID', 'Unidade ID', 'Status']
     exibir_lista(app, consultas, colunas, 'Listar Consultas')
 def editar_consulta(tree):
     selecionado = tree.selection()
@@ -403,6 +409,7 @@ def editar_consulta(tree):
     btn_voltar = ttk.Button(janela, text='Voltar', width=20, command=lambda: fechar_janela(janela))
     btn_voltar.grid(row=len(campos)+1, column=0, columnspan=2)
     janela.grid_columnconfigure(1, weight=1)
+    
 def confirm_edit_consulta(cod_consulta, data, horario, observacoes, cod_paciente, cod_medico, cod_unidade, janela):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
@@ -467,7 +474,7 @@ def listar_unidades(app):
     cursor.execute('SELECT * FROM Unidade_de_Saude')
     unidades = cursor.fetchall()
     conn.close()
-    colunas = ['ID', 'Nome', 'Endereço', 'Telefone', 'Especialidades']
+    colunas = ['ID', 'Nome', 'Endereço', 'Telefone', 'Especialidades', 'Status']
     exibir_lista(app, unidades, colunas, 'Listar Unidades de Saúde')
 def editar_unidade(tree):
     selecionado = tree.selection()
