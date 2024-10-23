@@ -12,7 +12,8 @@ def criar_banco_de_dados():
             cpf TEXT,
             telefone TEXT,
             email TEXT,
-            endereco TEXT
+            endereco TEXT,
+            status TEXT,
         )
     ''')
 
@@ -24,7 +25,8 @@ def criar_banco_de_dados():
             telefone TEXT,
             email TEXT,
             disponibilidade_dias DATE,
-            disponibilidade_horario DATE
+            disponibilidade_horario DATE,
+            status TEXT
         )
     ''')
 
@@ -34,7 +36,8 @@ def criar_banco_de_dados():
             nome TEXT NOT NULL,
             endereco TEXT,
             telefone TEXT,
-            especialidades TEXT
+            especialidades TEXT,
+            status TEXT
         )
     ''')
 
@@ -48,6 +51,7 @@ def criar_banco_de_dados():
             cod_paciente INTEGER,
             cod_medico INTEGER,
             cod_unidade INTEGER,
+            status TEXT NOT NULL DEFAULT 'Agendada',
             FOREIGN KEY (cod_paciente) REFERENCES Paciente (cod_paciente),
             FOREIGN KEY (cod_medico) REFERENCES Medico (cod_medico),
             FOREIGN KEY (cod_unidade) REFERENCES Unidade_de_Saude (cod_unidade)
