@@ -8,7 +8,7 @@ def criar_banco_de_dados():
         CREATE TABLE IF NOT EXISTS Paciente (
             cod_paciente INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
-            data_nascimento TEXT,
+            data_nascimento DATE,
             cpf TEXT,
             telefone TEXT,
             email TEXT,
@@ -23,8 +23,8 @@ def criar_banco_de_dados():
             especialidade TEXT,
             telefone TEXT,
             email TEXT,
-            disponibilidade_dias TEXT,
-            disponibilidade_horario TEXT
+            disponibilidade_dias DATE,
+            disponibilidade_horario DATE
         )
     ''')
 
@@ -41,8 +41,8 @@ def criar_banco_de_dados():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Consulta (
             cod_consulta INTEGER PRIMARY KEY AUTOINCREMENT,
-            data TEXT NOT NULL,
-            horario TEXT NOT NULL,
+            data DATE NOT NULL,
+            horario DATE NOT NULL,
             observacoes TEXT,
             status TEXT,
             cod_paciente INTEGER,
