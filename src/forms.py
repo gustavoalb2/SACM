@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import tkinter as tk
 import ttkbootstrap as ttk
 from tkinter import messagebox
@@ -88,6 +88,7 @@ def cadastrar_paciente(nome, data_nascimento, cpf, telefone, email, endereco,jan
     ''', (nome, data_nascimento, cpf, telefone, email, endereco))
     conn.commit()
     conn.close()
+    janela.destroy()
     messagebox.showinfo('Sucesso', 'Paciente cadastrado com sucesso!')
 def criar_formulario_paciente(app):
     janela = ttk.Toplevel(app)
@@ -314,18 +315,50 @@ def excluir_medico(tree):
 def cadastrar_consulta(data, horario, observacoes, cod_paciente, cod_medico, cod_unidade, janela):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
-    if data == '' or horario == '':
-            messagebox.showerror('Erro', 'Preencha todos os campos')
-    else:
-            cursor.execute('''
-                INSERT INTO Consulta (data, horario, observacoes, cod_paciente, cod_medico, cod_unidade)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', (data, horario, observacoes, cod_paciente, cod_medico, cod_unidade))
-            conn.commit()
+
+    data_datetime = datetime.strptime(data, "%d-%m-%Y")
+    horario_datetime = datetime.strptime(horario, "%H:%M").time()
+
+    consulta_datetime = datetime.combine(data_datetime, horario_datetime)
+    tempo_minimo = timedelta(hours=1)  # Intervalo de 1 hora
+
+    cursor.execute('''SELECT * FROM Consulta WHERE cod_paciente = ? AND data = ?''', (cod_paciente, data))
+    consultas_paciente = cursor.fetchall()
+
+    for consulta in consultas_paciente:
+        horario_existente = datetime.strptime(consulta[2], "%H:%M").time()  # Coluna 2: Horário
+        consulta_existente_datetime = datetime.combine(data_datetime, horario_existente)
+
+        if consulta_existente_datetime <= consulta_datetime < consulta_existente_datetime + tempo_minimo:
+            messagebox.showerror('Erro',
+                                 'Este paciente já tem uma consulta marcada para este horário.')
             conn.close()
-            messagebox.showinfo('Sucesso', 'Consulta cadastrada com sucesso!')
-            fechar_janela(janela)
-            
+            return
+
+    cursor.execute('''SELECT * FROM Consulta WHERE cod_medico = ? AND data = ?''', (cod_medico, data))
+    consultas_medico = cursor.fetchall()
+
+    for consulta in consultas_medico:
+        horario_existente = datetime.strptime(consulta[2], "%H:%M").time()  # Coluna 2: Horário
+        consulta_existente_datetime = datetime.combine(data_datetime, horario_existente)
+
+        if consulta_existente_datetime <= consulta_datetime < consulta_existente_datetime + tempo_minimo:
+            messagebox.showerror('Erro',
+                                 'Este médico já tem uma consulta marcada para este horário.')
+            conn.close()
+            return
+
+    if data == '' or horario == '':
+        messagebox.showerror('Erro', 'Preencha todos os campos')
+    else:
+        cursor.execute('''INSERT INTO Consulta (data, horario, observacoes, cod_paciente, cod_medico, cod_unidade)
+                          VALUES (?, ?, ?, ?, ?, ?)''',
+                       (data, horario, observacoes, cod_paciente, cod_medico, cod_unidade))
+        conn.commit()
+        conn.close()
+        messagebox.showinfo('Sucesso', 'Consulta cadastrada com sucesso!')
+        fechar_janela(janela)
+
 def criar_formulario_consulta(app):
     janela = ttk.Toplevel(app)
     janela.title("Cadastrar Consulta")
@@ -333,14 +366,21 @@ def criar_formulario_consulta(app):
 
     campos = ['Data', 'Horário', 'Observações', 'Código do Paciente', 'Código do Médico', 'Código da Unidade']
     entradas = {}
+
     for i, campo in enumerate(campos):
         ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
+
         if campo == 'Data':
-            entrada = ttk.DateEntry(janela, dateformat='%d-%m-%Y',
-                            firstweekday=6,
-                            bootstyle='danger')
+            entrada = ttk.DateEntry(janela, dateformat='%d-%m-%Y', firstweekday=6, bootstyle='danger')
+        elif campo == 'Código do Paciente':
+            entrada = ttk.Combobox(janela, values=obter_lista_pacientes())
+        elif campo == 'Código do Médico':
+            entrada = ttk.Combobox(janela, values=obter_lista_medicos())
+        elif campo == 'Código da Unidade':
+            entrada = ttk.Combobox(janela, values=obter_lista_unidades())
         else:
             entrada = ttk.Entry(janela)
+
         entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
         entradas[campo.lower()] = entrada
 
@@ -348,15 +388,18 @@ def criar_formulario_consulta(app):
         entradas['data'].entry.get(),
         entradas['horário'].get(),
         entradas['observações'].get(),
-        entradas['código do paciente'].get(),
-        entradas['código do médico'].get(),
-        entradas['código da unidade'].get(),
+        entradas['código do paciente'].get().split(' - ')[0],
+        entradas['código do médico'].get().split(' - ')[0],
+        entradas['código da unidade'].get().split(' - ')[0],
         janela
     )).grid(row=len(campos), column=0, columnspan=2, pady=10)
+
     btn_voltar = ttk.Button(janela, text='Voltar', width=20, command=lambda: fechar_janela(janela))
-    btn_voltar.grid(row=len(campos)+1, column=0, columnspan=2)
+    btn_voltar.grid(row=len(campos) + 1, column=0, columnspan=2)
+
     janela.grid_columnconfigure(1, weight=1)
-    
+
+
 def listar_consultas(app):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
@@ -538,6 +581,30 @@ def excluir_unidade(tree):
         unidade = item['values']
         # Lógica para excluir a unidade
         print(f"Excluir unidade: {unidade}")
+
+def obter_lista_pacientes():
+    conn = sqlite3.connect('sistema_agendamento.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT cod_paciente, nome FROM Paciente")
+    pacientes = cursor.fetchall()
+    conn.close()
+    return [f"{paciente[0]} - {paciente[1]}" for paciente in pacientes]
+
+def obter_lista_medicos():
+    conn = sqlite3.connect('sistema_agendamento.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT cod_medico, nome FROM Medico")
+    medicos = cursor.fetchall()
+    conn.close()
+    return [f"{medico[0]} - {medico[1]}" for medico in medicos]
+
+def obter_lista_unidades():
+    conn = sqlite3.connect('sistema_agendamento.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT cod_unidade, nome FROM Unidade_de_Saude")
+    unidades = cursor.fetchall()
+    conn.close()
+    return [f"{unidade[0]} - {unidade[1]}" for unidade in unidades]
 
 def limpar_tela(app):
     for widget in app.winfo_children():
