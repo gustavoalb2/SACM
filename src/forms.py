@@ -457,7 +457,7 @@ def editar_consulta(tree):
     for i, campo in enumerate(campos):
         ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
         if campo == 'Status':
-            entrada = ttk.Combobox(janela, values=['Ativo', 'Inativo'])
+            entrada = ttk.Combobox(janela, values=['Confirmado', 'Cancelado', 'Realizado'])
         else:
             entrada = ttk.Entry(janela)
         entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
@@ -469,7 +469,7 @@ def editar_consulta(tree):
     entradas['código do paciente'].insert(0, consulta[4])  # Código do Paciente
     entradas['código do médico'].insert(0, consulta[5])  # Código do Médico
     entradas['código da unidade'].insert(0, consulta[6])  # Código da Unidade
-    entradas['status'].set(consulta[7])  # Status
+    entradas['status'].insert(0, consulta[7])  # Status
 
     ttk.Button(janela, text="Salvar", width=20, command=lambda: confirm_edit_consulta(
         cod_consulta,
@@ -492,11 +492,11 @@ def confirm_edit_consulta(cod_consulta, data, horario, observacoes, cod_paciente
         UPDATE Consulta
         SET data = ?, horario = ?, observacoes = ?, cod_paciente = ?, cod_medico = ?, cod_unidade = ?, status = ?
         WHERE cod_consulta = ?
-    ''', (data, horario, observacoes, cod_paciente, cod_medico, cod_unidade, cod_consulta, status))
+    ''', (data, horario, observacoes, cod_paciente, cod_medico, cod_unidade, status, cod_consulta))
     conn.commit()
     conn.close()
     messagebox.showinfo('Sucesso', 'Consulta atualizada com sucesso!')
-    fechar_janela(janela)
+    janela.destroy()
 def excluir_consulta(tree):
     selected_item = tree.selection()
     if not selected_item:
