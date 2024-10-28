@@ -8,6 +8,23 @@ import sqlite3
 def exibir_lista(app, dados, colunas, titulo):
     janela = ttk.Toplevel(app)
     janela.title(titulo)
+    
+    # Frame para a barra de pesquisa
+    frame_pesquisa = tk.Frame(janela)
+    frame_pesquisa.pack(fill=tk.X, pady=10)
+
+    tk.Label(frame_pesquisa, text="Pesquisar:").pack(side=tk.LEFT, padx=5)
+    entrada_pesquisa = tk.Entry(frame_pesquisa)
+    entrada_pesquisa.pack(side=tk.LEFT, padx=5, fill=tk.X, expand=True)
+
+    def pesquisar():
+        termo = entrada_pesquisa.get().lower()
+        # Filtra os dados com base no termo de pesquisa, verificando se o nome começa com o termo
+        dados_filtrados = [paciente for paciente in dados if paciente[1].lower().startswith(termo)]
+        atualizar_treeview(dados_filtrados)
+
+    tk.Button(frame_pesquisa, text="Pesquisar", command=pesquisar).pack(side=tk.LEFT, padx=5)
+
 
     tree = ttk.Treeview(janela, columns=colunas, show='headings')
     for col in colunas:
@@ -77,6 +94,13 @@ def exibir_lista(app, dados, colunas, titulo):
 
         btn_voltar = ttk.Button(frame_botoes, text="Voltar", command=lambda: fechar_janela(janela))
         btn_voltar.pack(side=tk.RIGHT, padx=5, ipadx=20)
+   
+    def atualizar_treeview(dados):
+        for item in tree.get_children():
+            tree.delete(item)
+        for item in dados:
+            tree.insert('', tk.END, values=item)
+
 
 #funções relacionadas a paciente abaixo
 def cadastrar_paciente(nome, data_nascimento, cpf, telefone, email, endereco,janela):
@@ -144,11 +168,14 @@ def editar_paciente(tree):
     janela.title("Editar Paciente")
     janela.geometry("400x400")
 
-    campos = ['Nome', 'Data de Nascimento', 'CPF', 'Telefone', 'Email', 'Endereço']
+    campos = ['Nome', 'Data de Nascimento', 'CPF', 'Telefone', 'Email', 'Endereço', 'Status']
     entradas = {}
     for i, campo in enumerate(campos):
         ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
-        entrada = ttk.Entry(janela)
+        if campo == 'Status':
+            entrada = ttk.Combobox(janela, values=['Ativo', 'Inativo'])
+        else: 
+            entrada = ttk.Entry(janela)
         entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
         entradas[campo.lower()] = entrada
 
@@ -159,6 +186,7 @@ def editar_paciente(tree):
     entradas['telefone'].insert(0, paciente[4])  # Telefone
     entradas['email'].insert(0, paciente[5])  # Email
     entradas['endereço'].insert(0, paciente[6])  # Endereço
+    entradas['status'].set(paciente[7])  # Status
 
     ttk.Button(janela, text="Salvar", width=20, command=lambda: confirm_edit_paciente(
         cod_paciente,
@@ -168,24 +196,25 @@ def editar_paciente(tree):
         entradas['telefone'].get(),
         entradas['email'].get(),
         entradas['endereço'].get(),
+        entradas['status'].get(),
         janela
     )).grid(row=len(campos), column=0, columnspan=2, pady=10)
     btn_voltar = ttk.Button(janela, text='Voltar', command=lambda: fechar_janela(janela), width=20)
     btn_voltar.grid(row=len(campos)+1, column=0, columnspan=2)
 
-    janela.grid_columnconfigure(1, weight=1)   
-def confirm_edit_paciente(cod_paciente, nome, data_nascimento, cpf, telefone, email, endereco, janela):
+    janela.grid_columnconfigure(1, weight=1)
+def confirm_edit_paciente(cod_paciente, nome, data_nascimento, cpf, telefone, email, endereco, status, janela):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
     cursor.execute('''
         UPDATE Paciente
-        SET nome = ?, data_nascimento = ?, cpf = ?, telefone = ?, email = ?, endereco = ?
+        SET nome = ?, data_nascimento = ?, cpf = ?, telefone = ?, email = ?, endereco = ?, status = ?
         WHERE cod_paciente = ?
-    ''', (nome, data_nascimento, cpf, telefone, email, endereco, cod_paciente))
+    ''', (nome, data_nascimento, cpf, telefone, email, endereco, status, cod_paciente))
     conn.commit()
     conn.close()
     messagebox.showinfo('Sucesso', 'Paciente atualizado com sucesso!')
-    fechar_janela(janela)  
+    janela.destroy()
 def excluir_paciente(tree):
     selected_item = tree.selection()
     if not selected_item:
@@ -207,8 +236,8 @@ def cadastrar_medico(nome, especialidade, telefone, email, disponibilidade_dias,
     ''', (nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario))
     conn.commit()
     conn.close()
+    janela.destroy()
     messagebox.showinfo('Sucesso', 'Médico cadastrado com sucesso!')
-    fechar_janela(janela)
 def criar_formulario_medico(app):
     janela = ttk.Toplevel(app)
     janela.title("Cadastrar Médico")
@@ -257,11 +286,14 @@ def editar_medico(tree):
     janela.title("Editar Medico")
     janela.geometry("400x400")
     
-    campos = ['Nome', 'Especialidade', 'Telefone', 'Email', 'Dias de Disponibilidade', 'Horário de Disponibilidade']
+    campos = ['Nome', 'Especialidade', 'Telefone', 'Email', 'Dias de Disponibilidade', 'Horário de Disponibilidade', 'Status']
     entradas = {}
     for i, campo in enumerate(campos):
         ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
-        entrada = ttk.Entry(janela)
+        if campo == 'Status':
+            entrada = ttk.Combobox(janela, values=['Ativo', 'Inativo'])
+        else:
+            entrada = ttk.Entry(janela)
         entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
         entradas[campo.lower()] = entrada
         
@@ -272,6 +304,7 @@ def editar_medico(tree):
     entradas['email'].insert(0, medico[4])  # Telefone
     entradas['dias de disponibilidade'].insert(0, medico[5])  # Email
     entradas['horário de disponibilidade'].insert(0, medico[6])  # Endereço
+    entradas['status'].set(medico[7])  # Status
 
     ttk.Button(janela, text="Salvar", width=20, command=lambda: confirm_edit_medico(
         cod_medico,
@@ -281,25 +314,24 @@ def editar_medico(tree):
         entradas['email'].get(),
         entradas['dias de disponibilidade'].get(),
         entradas['horário de disponibilidade'].get(),
+        entradas['status'].get(),
         janela
     )).grid(row=len(campos), column=0, columnspan=2, pady=10)
     btn_voltar = ttk.Button(janela, text='Voltar', width=20, command=lambda: fechar_janela(janela))
     btn_voltar.grid(row=len(campos)+1, column=0, columnspan=2)
-    janela.grid_columnconfigure(1, weight=1)
-    
-def confirm_edit_medico(cod_medico, nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario, janela):
+    janela.grid_columnconfigure(1, weight=1)   
+def confirm_edit_medico(cod_medico, nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario, status, janela):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
     cursor.execute('''
         UPDATE Medico
-        SET nome = ?, especialidade = ?, telefone = ?, email = ?, disponibilidade_dias = ?, disponibilidade_horario = ?
+        SET nome = ?, especialidade = ?, telefone = ?, email = ?, disponibilidade_dias = ?, disponibilidade_horario = ?, status = ?
         WHERE cod_medico = ?
-    ''', (nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario, cod_medico))
+    ''', (nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario, status, cod_medico))
     conn.commit()
     conn.close()
     messagebox.showinfo('Sucesso', 'Médico atualizado com sucesso!')
     fechar_janela(janela)    
-    
 def excluir_medico(tree):
     selected_item = tree.selection()
     if not selected_item:
@@ -356,9 +388,8 @@ def cadastrar_consulta(data, horario, observacoes, cod_paciente, cod_medico, cod
                        (data, horario, observacoes, cod_paciente, cod_medico, cod_unidade))
         conn.commit()
         conn.close()
-        messagebox.showinfo('Sucesso', 'Consulta cadastrada com sucesso!')
-        fechar_janela(janela)
-
+        janela.destroy()
+        messagebox.showinfo('Sucesso', 'Consulta cadastrado com sucesso!')
 def criar_formulario_consulta(app):
     janela = ttk.Toplevel(app)
     janela.title("Cadastrar Consulta")
@@ -398,8 +429,6 @@ def criar_formulario_consulta(app):
     btn_voltar.grid(row=len(campos) + 1, column=0, columnspan=2)
 
     janela.grid_columnconfigure(1, weight=1)
-
-
 def listar_consultas(app):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
@@ -423,14 +452,16 @@ def editar_consulta(tree):
     janela.title("Editar Consulta")
     janela.geometry("400x400")
     
-    campos = ['Data', 'Horário', 'Observações', 'Código do Paciente', 'Código do Médico', 'Código da Unidade']
+    campos = ['Data', 'Horário', 'Observações', 'Código do Paciente', 'Código do Médico', 'Código da Unidade', 'Status']
     entradas = {}
     for i, campo in enumerate(campos):
         ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
-        entrada = ttk.Entry(janela)
+        if campo == 'Status':
+            entrada = ttk.Combobox(janela, values=['Ativo', 'Inativo'])
+        else:
+            entrada = ttk.Entry(janela)
         entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
         entradas[campo.lower()] = entrada
-        
     # Mapeia os valores da consulta para os campos correspondentes
     entradas['data'].insert(0, consulta[1])  # Data
     entradas['horário'].insert(0, consulta[2])  # Horário
@@ -438,6 +469,7 @@ def editar_consulta(tree):
     entradas['código do paciente'].insert(0, consulta[4])  # Código do Paciente
     entradas['código do médico'].insert(0, consulta[5])  # Código do Médico
     entradas['código da unidade'].insert(0, consulta[6])  # Código da Unidade
+    entradas['status'].set(consulta[7])  # Status
 
     ttk.Button(janela, text="Salvar", width=20, command=lambda: confirm_edit_consulta(
         cod_consulta,
@@ -447,20 +479,20 @@ def editar_consulta(tree):
         entradas['código do paciente'].get(),
         entradas['código do médico'].get(),
         entradas['código da unidade'].get(),
+        entradas['status'].get(),
         janela
     )).grid(row=len(campos), column=0, columnspan=2, pady=10)
     btn_voltar = ttk.Button(janela, text='Voltar', width=20, command=lambda: fechar_janela(janela))
     btn_voltar.grid(row=len(campos)+1, column=0, columnspan=2)
-    janela.grid_columnconfigure(1, weight=1)
-    
-def confirm_edit_consulta(cod_consulta, data, horario, observacoes, cod_paciente, cod_medico, cod_unidade, janela):
+    janela.grid_columnconfigure(1, weight=1)  
+def confirm_edit_consulta(cod_consulta, data, horario, observacoes, cod_paciente, cod_medico, cod_unidade, status, janela):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
     cursor.execute('''
         UPDATE Consulta
-        SET data = ?, horario = ?, observacoes = ?, cod_paciente = ?, cod_medico = ?, cod_unidade = ?
+        SET data = ?, horario = ?, observacoes = ?, cod_paciente = ?, cod_medico = ?, cod_unidade = ?, status = ?
         WHERE cod_consulta = ?
-    ''', (data, horario, observacoes, cod_paciente, cod_medico, cod_unidade, cod_consulta))
+    ''', (data, horario, observacoes, cod_paciente, cod_medico, cod_unidade, cod_consulta, status))
     conn.commit()
     conn.close()
     messagebox.showinfo('Sucesso', 'Consulta atualizada com sucesso!')
@@ -486,8 +518,8 @@ def cadastrar_unidade(nome, endereco, telefone, especialidades, janela):
     ''', (nome, endereco, telefone, especialidades))
     conn.commit()
     conn.close()
-    messagebox.showinfo('Sucesso', 'Unidade cadastrada com sucesso!')
-    fechar_janela(janela)
+    janela.destroy()
+    messagebox.showinfo('Sucesso', 'Unidade de saúde cadastrado com sucesso!')
 def criar_formulario_unidade(app):
     janela = ttk.Toplevel(app)
     janela.title("Cadastrar Unidade de Saúde")
@@ -534,11 +566,14 @@ def editar_unidade(tree):
     janela.title("Editar Unidade de Saúde")
     janela.geometry("400x400")
     
-    campos = ['Nome', 'Endereço', 'Telefone', 'Especialidades']
+    campos = ['Nome', 'Endereço', 'Telefone', 'Especialidades', 'Status']
     entradas = {}
     for i, campo in enumerate(campos):
         ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
-        entrada = ttk.Entry(janela)
+        if campo == 'Status':
+            entrada = ttk.Combobox(janela, values=['Ativo', 'Inativo'])
+        else:
+            entrada = ttk.Entry(janela)
         entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
         entradas[campo.lower()] = entrada
         
@@ -547,6 +582,7 @@ def editar_unidade(tree):
     entradas['endereço'].insert(0, unidade[2])  # Endereço
     entradas['telefone'].insert(0, unidade[3])  # Telefone
     entradas['especialidades'].insert(0, unidade[4])  # Especialidades
+    entradas['status'].set(unidade[5])  # Status
 
     ttk.Button(janela, text="Salvar", width=20, command=lambda: confirm_edit_unidade(
         cod_unidade,
@@ -554,19 +590,20 @@ def editar_unidade(tree):
         entradas['endereço'].get(),
         entradas['telefone'].get(),
         entradas['especialidades'].get(),
+        entradas['status'].get(),
         janela
     )).grid(row=len(campos), column=0, columnspan=2, pady=10)
     btn_voltar = ttk.Button(janela, text='Voltar', width=20, command=lambda: fechar_janela(janela))
     btn_voltar.grid(row=len(campos)+1, column=0, columnspan=2)
     janela.grid_columnconfigure(1, weight=1)
-def confirm_edit_unidade(cod_unidade, nome, endereco, telefone, especialidades, janela):
+def confirm_edit_unidade(cod_unidade, nome, endereco, telefone, especialidades, status, janela):
     conn = sqlite3.connect('sistema_agendamento.db')
     cursor = conn.cursor()
     cursor.execute('''
         UPDATE Unidade_de_Saude
-        SET nome = ?, endereco = ?, telefone = ?, especialidades = ?
+        SET nome = ?, endereco = ?, telefone = ?, especialidades = ?, status = ?
         WHERE cod_unidade = ?
-    ''', (nome, endereco, telefone, especialidades, cod_unidade))
+    ''', (nome, endereco, telefone, especialidades, status, cod_unidade))
     conn.commit()
     conn.close()
     messagebox.showinfo('Sucesso', 'Unidade atualizada com sucesso!')
