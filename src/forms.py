@@ -224,11 +224,25 @@ def exibir_lista(app, dados, colunas, titulo):
         if not selected_item:
             messagebox.showerror('Erro', 'Selecione um paciente para excluir')
             return
-        if selected_item:
-            item = tree.item(selected_item)
-            paciente = item['values']
-            # Lógica para excluir o paciente
-            print(f"Excluir paciente: {paciente}")
+        item = tree.item(selected_item)
+        paciente = item['values']
+        cod_paciente = paciente[0]
+        conn = sqlite3.connect('sistema_agendamento.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE Paciente
+            SET status = 'Desativado'
+            WHERE cod_paciente = ?
+        ''', (cod_paciente,))
+        conn.commit()
+        conn.close()
+        messagebox.showinfo('Sucesso', 'Paciente desativado com sucesso!')
+        conn = sqlite3.connect('sistema_agendamento.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM Paciente')
+        dadospaciente = cursor.fetchall()
+        conn.close()
+        atualizar_treeview(dadospaciente)
 
     def criar_formulario_medico(app):
         janela = ttk.Toplevel(app)
@@ -350,11 +364,25 @@ def exibir_lista(app, dados, colunas, titulo):
         if not selected_item:
             messagebox.showerror('Erro', 'Selecione um medico para excluir')
             return
-        if selected_item:
-            item = tree.item(selected_item)
-            medico = item['values']
-            # Lógica para excluir o medico
-            print(f"Excluir medico: {medico}")
+        item = tree.item(selected_item)
+        medico = item['values']
+        cod_medico = medico[0]
+        conn = sqlite3.connect('sistema_agendamento.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE Medico
+            SET status = 'Desativado'
+            WHERE cod_medico = ?
+        ''', (cod_medico,))
+        conn.commit()
+        conn.close()
+        messagebox.showinfo('Sucesso', 'Médico desativado com sucesso!')
+        conn = sqlite3.connect('sistema_agendamento.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM Medico')
+        dadosmedico = cursor.fetchall()
+        conn.close()
+        atualizar_treeview(dadosmedico)
 
     def criar_formulario_unidade(app):
         janela = ttk.Toplevel(app)
@@ -465,11 +493,25 @@ def exibir_lista(app, dados, colunas, titulo):
         if not selected_item:
             messagebox.showerror('Erro', 'Selecione uma unidade para excluir')
             return
-        if selected_item:
-            item = tree.item(selected_item)
-            unidade = item['values']
-            # Lógica para excluir a unidade
-            print(f"Excluir unidade: {unidade}")
+        item = tree.item(selected_item)
+        unidade = item['values']
+        cod_unidade = unidade[0]
+        conn = sqlite3.connect('sistema_agendamento.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE Unidade_de_Saude
+            SET status = 'Desativado'
+            WHERE cod_unidade = ?
+        ''', (cod_unidade,))
+        conn.commit()
+        conn.close()
+        messagebox.showinfo('Sucesso', 'Unidade desativada com sucesso!')
+        conn = sqlite3.connect('sistema_agendamento.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM Unidade_de_Saude')
+        dadosunidade = cursor.fetchall()
+        conn.close()
+        atualizar_treeview(dadosunidade)
 
     def criar_formulario_consulta(app):
         janela = ttk.Toplevel(app)
@@ -637,11 +679,25 @@ def exibir_lista(app, dados, colunas, titulo):
         if not selected_item:
             messagebox.showerror('Erro', 'Selecione uma consulta para excluir')
             return
-        if selected_item:
-            item = tree.item(selected_item)
-            consulta = item['values']
-            # Lógica para excluir a consulta
-            print(f"Excluir consulta: {consulta}")
+        item = tree.item(selected_item)
+        consulta = item['values']
+        cod_consulta = consulta[0]
+        conn = sqlite3.connect('sistema_agendamento.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE Consulta
+            SET status = 'Cancelado'
+            WHERE cod_consulta = ?
+        ''', (cod_consulta,))
+        conn.commit()
+        conn.close()
+        messagebox.showinfo('Sucesso', 'Consulta cancelada com sucesso!')
+        conn = sqlite3.connect('sistema_agendamento.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM Consulta')
+        dadosconsulta = cursor.fetchall()
+        conn.close()
+        atualizar_treeview(dadosconsulta)
 
 
 
