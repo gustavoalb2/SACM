@@ -24,8 +24,8 @@ def criar_banco_de_dados():
             especialidade TEXT,
             telefone TEXT,
             email TEXT,
-            disponibilidade_dias DATE,
-            disponibilidade_horario DATE,
+            horario_entrada TEXT NOT NULL,
+            horario_saida TEXT NOT NULL,
             status TEXT DEFAULT 'Ativo'
         )
     ''')

@@ -55,8 +55,8 @@ def exibir_lista(app, dados, colunas, titulo):
         btn_voltar.pack(side=tk.RIGHT, padx=5, ipadx=20)
         
     if titulo == 'Listar Médicos':
-        tree.column('Disponibilidade Dias', width=150)
-        tree.column('Disponibilidade Horário', width=150)
+        tree.column('horario_entrada', width=150)
+        tree.column('horario_saida', width=150)
         btn_editar = ttk.Button(frame_botoes, style='warning',text="Editar", command=lambda: editar_medico(tree))
         btn_editar.pack(side=tk.LEFT, padx=5, ipadx=20)
 
@@ -249,8 +249,8 @@ def exibir_lista(app, dados, colunas, titulo):
         janela.title("Cadastrar Médico")
         janela.geometry("400x400")
 
-        campos = ['Nome', 'Especialidade', 'Telefone', 'Email', 'Dias de Disponibilidade',
-                  'Horário de Disponibilidade']
+        campos = ['Nome', 'Especialidade', 'Telefone', 'Email', 'horario_entrada',
+                  'horario_saida']
         entradas = {}
         for i, campo in enumerate(campos):
             ttk.Label(janela, text=f'{campo}:').grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
@@ -263,22 +263,22 @@ def exibir_lista(app, dados, colunas, titulo):
             entradas['especialidade'].get(),
             entradas['telefone'].get(),
             entradas['email'].get(),
-            entradas['dias de disponibilidade'].get(),
-            entradas['horário de disponibilidade'].get(),
+            entradas['horario_entrada'].get(),
+            entradas['horario_saida'].get(),
             janela
         )).grid(row=len(campos), column=0, columnspan=2, pady=10)
         btn_voltar = ttk.Button(janela, text='Voltar', width=20, command=lambda: fechar_janela(janela))
         btn_voltar.grid(row=len(campos) + 1, column=0, columnspan=2)
         janela.grid_columnconfigure(1, weight=1)
 
-    def cadastrar_medico(nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario,
+    def cadastrar_medico(nome, especialidade, telefone, email, horario_entrada, horario_saida,
                          janela):
         conn = sqlite3.connect('sistema_agendamento.db')
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO Medico (nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario)
+            INSERT INTO Medico (nome, especialidade, telefone, email, horario_entrada, horario_saida)
             VALUES (?, ?, ?, ?, ?, ?)
-        ''', (nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario))
+        ''', (nome, especialidade, telefone, email, horario_entrada, horario_saida))
         conn.commit()
         conn.close()
         janela.destroy()
@@ -304,7 +304,7 @@ def exibir_lista(app, dados, colunas, titulo):
         janela.title("Editar Medico")
         janela.geometry("400x400")
 
-        campos = ['Nome', 'Especialidade', 'Telefone', 'Email', 'Dias de Disponibilidade', 'Horário de Disponibilidade',
+        campos = ['Nome', 'Especialidade', 'Telefone', 'Email', 'Horário de Entrada', 'Horário de Saída',
                   'Status']
         entradas = {}
         for i, campo in enumerate(campos):
@@ -318,11 +318,11 @@ def exibir_lista(app, dados, colunas, titulo):
 
         # Mapeia os valores do paciente para os campos correspondentes
         entradas['nome'].insert(0, medico[1])  # Nome
-        entradas['especialidade'].insert(0, medico[2])  # Data de Nascimento
-        entradas['telefone'].insert(0, medico[3])  # CPF
-        entradas['email'].insert(0, medico[4])  # Telefone
-        entradas['dias de disponibilidade'].insert(0, medico[5])  # Email
-        entradas['horário de disponibilidade'].insert(0, medico[6])  # Endereço
+        entradas['especialidade'].insert(0, medico[2])  # Especialidade
+        entradas['telefone'].insert(0, medico[3])  # Telefone
+        entradas['email'].insert(0, medico[4])  # Email
+        entradas['horario_entrada'].insert(0, medico[5])  # Horário Entrada
+        entradas['horario_saida'].insert(0, medico[6])  # Horário Saída
         entradas['status'].set(medico[7])  # Status
 
         ttk.Button(janela, text="Salvar", width=20, command=lambda: confirm_edit_medico(
@@ -331,8 +331,8 @@ def exibir_lista(app, dados, colunas, titulo):
             entradas['especialidade'].get(),
             entradas['telefone'].get(),
             entradas['email'].get(),
-            entradas['dias de disponibilidade'].get(),
-            entradas['horário de disponibilidade'].get(),
+            entradas['horario_entrada'].get(),
+            entradas['horario_saida'].get(),
             entradas['status'].get(),
             janela
         )).grid(row=len(campos), column=0, columnspan=2, pady=10)
@@ -340,15 +340,15 @@ def exibir_lista(app, dados, colunas, titulo):
         btn_voltar.grid(row=len(campos) + 1, column=0, columnspan=2)
         janela.grid_columnconfigure(1, weight=1)
 
-    def confirm_edit_medico(cod_medico, nome, especialidade, telefone, email, disponibilidade_dias,
-                            disponibilidade_horario, status, janela):
+    def confirm_edit_medico(cod_medico, nome, especialidade, telefone, email, horario_entrada,
+                            horario_saida, status, janela):
         conn = sqlite3.connect('sistema_agendamento.db')
         cursor = conn.cursor()
         cursor.execute('''
             UPDATE Medico
-            SET nome = ?, especialidade = ?, telefone = ?, email = ?, disponibilidade_dias = ?, disponibilidade_horario = ?, status = ?
+            SET nome = ?, especialidade = ?, telefone = ?, email = ?, horario_entrada = ?, horario_saida = ?, status = ?
             WHERE cod_medico = ?
-        ''', (nome, especialidade, telefone, email, disponibilidade_dias, disponibilidade_horario, status, cod_medico))
+        ''', (nome, especialidade, telefone, email, horario_entrada, horario_saida, status, cod_medico))
         conn.commit()
         conn.close()
         messagebox.showinfo('Sucesso', 'Médico atualizado com sucesso!')
@@ -563,6 +563,16 @@ def exibir_lista(app, dados, colunas, titulo):
         consulta_datetime = datetime.combine(data_datetime, horario_datetime)
         tempo_minimo = timedelta(hours=1)  # Intervalo de 1 hora
 
+        cursor.execute('SELECT horario_entrada, horario_saida FROM Medico WHERE cod_medico = ?', (cod_medico,))
+        horario_medico = cursor.fetchone()
+        horario_entrada = datetime.strptime(horario_medico[0], "%H:%M").time()
+        horario_saida = datetime.strptime(horario_medico[1], "%H:%M").time()
+
+        if not (horario_entrada <= horario_datetime < horario_saida):
+            messagebox.showerror('Erro', 'A consulta deve estar dentro do horário de expediente do médico.')
+            conn.close()
+            return
+
         cursor.execute('''SELECT * FROM Consulta WHERE cod_paciente = ? AND data = ?''', (cod_paciente, data))
         consultas_paciente = cursor.fetchall()
 
@@ -716,7 +726,7 @@ def listar_medicos(app):
     cursor.execute('SELECT * FROM Medico')
     medicos = cursor.fetchall()
     conn.close()
-    colunas = ['ID', 'Nome', 'Especialidade', 'Telefone', 'Email', 'Disponibilidade Dias', 'Disponibilidade Horário', 'Status']
+    colunas = ['ID', 'Nome', 'Especialidade', 'Telefone', 'Email', 'horario_entrada', 'horario_saida', 'Status']
     exibir_lista(app, medicos, colunas, 'Listar Médicos')
 
 def listar_unidades(app):
