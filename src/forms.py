@@ -4,13 +4,10 @@ import ttkbootstrap as ttk
 from tkinter import messagebox
 import sqlite3
 
-
-# função para mostrar a lista de pacientes, médicos, consultas e unidades de saúde
 def exibir_lista(app, dados, colunas, titulo):
     janela = ttk.Toplevel(app)
     janela.title(titulo)
 
-    # Frame para a barra de pesquisa
     frame_pesquisa = tk.Frame(janela)
     frame_pesquisa.pack(fill=tk.X, pady=10)
 
@@ -20,7 +17,6 @@ def exibir_lista(app, dados, colunas, titulo):
 
     def pesquisar():
         termo = entrada_pesquisa.get().lower()
-        # Filtra os dados com base no termo de pesquisa, verificando se o nome começa com o termo
         dados_filtrados = [paciente for paciente in dados if paciente[1].lower().startswith(termo)]
         atualizar_treeview(dados_filtrados)
 
@@ -36,11 +32,9 @@ def exibir_lista(app, dados, colunas, titulo):
 
     tree.pack(fill=tk.BOTH, expand=True)
 
-    # Frame para os botões
     frame_botoes = tk.Frame(janela)
     frame_botoes.pack(fill=tk.X, pady=10)
 
-    # botões para editar, excluir, inserir e voltar com base na tabela selecionada: paciente, médico, consulta ou unidade
     if titulo == 'Listar Pacientes':
         btn_editar = ttk.Button(frame_botoes, style='warning', text="Editar", command=lambda: editar_paciente(tree))
         btn_editar.pack(side=tk.LEFT, padx=5, ipadx=20)
@@ -160,10 +154,9 @@ def exibir_lista(app, dados, colunas, titulo):
             messagebox.showerror('Erro', 'Selecione um paciente para editar')
             return
 
-        # Obtém os dados do paciente selecionado
         item = tree.item(selecionado)
         paciente = item['values']
-        cod_paciente = paciente[0]  # Supondo que o cod_paciente é o primeiro valor
+        cod_paciente = paciente[0]
 
         janela = tk.Toplevel()
         janela.title("Editar Paciente")
@@ -180,14 +173,13 @@ def exibir_lista(app, dados, colunas, titulo):
             entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
             entradas[campo.lower()] = entrada
 
-        # Mapeia os valores do paciente para os campos correspondentes
-        entradas['nome'].insert(0, paciente[1])  # Nome
-        entradas['data de nascimento'].insert(0, paciente[2])  # Data de Nascimento
-        entradas['cpf'].insert(0, paciente[3])  # CPF
-        entradas['telefone'].insert(0, paciente[4])  # Telefone
-        entradas['email'].insert(0, paciente[5])  # Email
-        entradas['endereço'].insert(0, paciente[6])  # Endereço
-        entradas['status'].set(paciente[7])  # Status
+        entradas['nome'].insert(0, paciente[1])  
+        entradas['data de nascimento'].insert(0, paciente[2])  
+        entradas['cpf'].insert(0, paciente[3])  
+        entradas['telefone'].insert(0, paciente[4])  
+        entradas['email'].insert(0, paciente[5])  
+        entradas['endereço'].insert(0, paciente[6])  
+        entradas['status'].set(paciente[7])  
 
         ttk.Button(janela, text="Salvar", width=20, command=lambda: confirm_edit_paciente(
             cod_paciente,
@@ -299,10 +291,9 @@ def exibir_lista(app, dados, colunas, titulo):
             messagebox.showerror('Erro', 'Selecione um medico para editar')
             return
 
-        # Obtém os dados do paciente selecionado
         item = tree.item(selecionado)
         medico = item['values']
-        cod_medico = medico[0]  # Supondo que o cod_paciente é o primeiro valor
+        cod_medico = medico[0]  
 
         janela = tk.Toplevel()
         janela.title("Editar Medico")
@@ -320,14 +311,13 @@ def exibir_lista(app, dados, colunas, titulo):
             entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
             entradas[campo.lower()] = entrada
 
-        # Mapeia os valores do paciente para os campos correspondentes
-        entradas['nome'].insert(0, medico[1])  # Nome
-        entradas['especialidade'].insert(0, medico[2])  # Especialidade
-        entradas['telefone'].insert(0, medico[3])  # Telefone
-        entradas['email'].insert(0, medico[4])  # Email
-        entradas['horario_entrada'].insert(0, medico[5])  # Horário Entrada
-        entradas['horario_saida'].insert(0, medico[6])  # Horário Saída
-        entradas['status'].set(medico[7])  # Status
+        entradas['nome'].insert(0, medico[1])  
+        entradas['especialidade'].insert(0, medico[2])  
+        entradas['telefone'].insert(0, medico[3])  
+        entradas['email'].insert(0, medico[4]) 
+        entradas['horario_entrada'].insert(0, medico[5])  
+        entradas['horario_saida'].insert(0, medico[6])  
+        entradas['status'].set(medico[7])  
 
         ttk.Button(janela, text="Salvar", width=20, command=lambda: confirm_edit_medico(
             cod_medico,
@@ -435,10 +425,10 @@ def exibir_lista(app, dados, colunas, titulo):
             messagebox.showerror('Erro', 'Selecione uma unidade para editar')
             return
 
-        # Obtém os dados da unidade selecionada
+        
         item = tree.item(selecionado)
         unidade = item['values']
-        cod_unidade = unidade[0]  # Supondo que o cod_unidade é o primeiro valor
+        cod_unidade = unidade[0]  
 
         janela = tk.Toplevel()
         janela.title("Editar Unidade de Saúde")
@@ -455,11 +445,11 @@ def exibir_lista(app, dados, colunas, titulo):
             entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
             entradas[campo.lower()] = entrada
 
-        entradas['nome'].insert(0, unidade[1])  # Nome
-        entradas['endereço'].insert(0, unidade[2])  # Endereço
-        entradas['telefone'].insert(0, unidade[3])  # Telefone
-        entradas['especialidades'].insert(0, unidade[4])  # Especialidades
-        entradas['status'].set(unidade[5])  # Status
+        entradas['nome'].insert(0, unidade[1]) 
+        entradas['endereço'].insert(0, unidade[2]) 
+        entradas['telefone'].insert(0, unidade[3])  
+        entradas['especialidades'].insert(0, unidade[4])  
+        entradas['status'].set(unidade[5])  
 
         ttk.Button(janela, text="Salvar", width=20, command=lambda: confirm_edit_unidade(
             cod_unidade,
@@ -565,7 +555,7 @@ def exibir_lista(app, dados, colunas, titulo):
         horario_datetime = datetime.strptime(horario, "%H:%M").time()
 
         consulta_datetime = datetime.combine(data_datetime, horario_datetime)
-        tempo_minimo = timedelta(hours=1)  # Intervalo de 1 hora
+        tempo_minimo = timedelta(hours=1)  
 
         cursor.execute('SELECT horario_entrada, horario_saida FROM Medico WHERE cod_medico = ?', (cod_medico,))
         horario_medico = cursor.fetchone()
@@ -581,7 +571,7 @@ def exibir_lista(app, dados, colunas, titulo):
         consultas_paciente = cursor.fetchall()
 
         for consulta in consultas_paciente:
-            horario_existente = datetime.strptime(consulta[2], "%H:%M").time()  # Coluna 2: Horário
+            horario_existente = datetime.strptime(consulta[2], "%H:%M").time()  
             consulta_existente_datetime = datetime.combine(data_datetime, horario_existente)
 
             if consulta_existente_datetime <= consulta_datetime < consulta_existente_datetime + tempo_minimo:
@@ -594,7 +584,7 @@ def exibir_lista(app, dados, colunas, titulo):
         consultas_medico = cursor.fetchall()
 
         for consulta in consultas_medico:
-            horario_existente = datetime.strptime(consulta[2], "%H:%M").time()  # Coluna 2: Horário
+            horario_existente = datetime.strptime(consulta[2], "%H:%M").time()  
             consulta_existente_datetime = datetime.combine(data_datetime, horario_existente)
 
             if consulta_existente_datetime <= consulta_datetime < consulta_existente_datetime + tempo_minimo:
@@ -625,10 +615,10 @@ def exibir_lista(app, dados, colunas, titulo):
             messagebox.showerror('Erro', 'Selecione uma consulta para editar')
             return
 
-        # Obtém os dados da consulta selecionada
+        
         item = tree.item(selecionado)
         consulta = item['values']
-        cod_consulta = consulta[0]  # Supondo que o cod_consulta é o primeiro valor
+        cod_consulta = consulta[0]  
 
         janela = tk.Toplevel()
         janela.title("Editar Consulta")
@@ -645,14 +635,14 @@ def exibir_lista(app, dados, colunas, titulo):
                 entrada = ttk.Entry(janela)
             entrada.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
             entradas[campo.lower()] = entrada
-        # Mapeia os valores da consulta para os campos correspondentes
-        entradas['data'].insert(0, consulta[1])  # Data
-        entradas['horário'].insert(0, consulta[2])  # Horário
-        entradas['observações'].insert(0, consulta[3])  # Observações
-        entradas['código do paciente'].insert(0, consulta[4])  # Código do Paciente
-        entradas['código do médico'].insert(0, consulta[5])  # Código do Médico
-        entradas['código da unidade'].insert(0, consulta[6])  # Código da Unidade
-        entradas['status'].insert(0, consulta[7])  # Status
+        
+        entradas['data'].insert(0, consulta[1]) 
+        entradas['horário'].insert(0, consulta[2])  
+        entradas['observações'].insert(0, consulta[3])  
+        entradas['código do paciente'].insert(0, consulta[4])  
+        entradas['código do médico'].insert(0, consulta[5]) 
+        entradas['código da unidade'].insert(0, consulta[6]) 
+        entradas['status'].insert(0, consulta[7])  
 
         ttk.Button(janela, text="Salvar", width=20, command=lambda: confirm_edit_consulta(
             cod_consulta,

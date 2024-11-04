@@ -7,9 +7,7 @@ from forms import (listar_pacientes, listar_medicos, listar_consultas, listar_un
 from PIL import Image, ImageTk
 
 def resource_path(relative_path):
-    """ Obtenha o caminho absoluto para o recurso, funciona para dev e para PyInstaller """
     try:
-        # PyInstaller cria uma pasta temporária e armazena o caminho nela
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
