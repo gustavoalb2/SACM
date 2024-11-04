@@ -1,15 +1,28 @@
+import os
+import sys
 import tkinter as tk
 import ttkbootstrap as ttk
 from db import criar_banco_de_dados
 from forms import (listar_pacientes, listar_medicos, listar_consultas, listar_unidades)
 from PIL import Image, ImageTk
 
+def resource_path(relative_path):
+    """ Obtenha o caminho absoluto para o recurso, funciona para dev e para PyInstaller """
+    try:
+        # PyInstaller cria uma pasta temporária e armazena o caminho nela
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 def criar_interface():
     app = ttk.Window(themename='flatly')
     app.title("Sistema de Agendamento de Consultas Médicas")
-    app.geometry("600x400")
+    app.geometry("900x500")
 
-    imagem = Image.open(r"C:\Users\Jesus\Desktop\projetos\SACM\src\SACM.png")
+    imagem_path = resource_path("src/SACM.png")
+    imagem = Image.open(imagem_path)
     imagem = imagem.resize((900, 500), Image.LANCZOS)
     imagem_tk = ImageTk.PhotoImage(imagem)
 
