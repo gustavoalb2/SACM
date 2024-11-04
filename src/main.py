@@ -2,11 +2,21 @@ import tkinter as tk
 import ttkbootstrap as ttk
 from db import criar_banco_de_dados
 from forms import (listar_pacientes, listar_medicos, listar_consultas, listar_unidades)
+from PIL import Image, ImageTk
 
 def criar_interface():
     app = ttk.Window(themename='flatly')
-    app.title("Sistema de Agendamento de Consultas")
+    app.title("Sistema de Agendamento de Consultas Médicas")
     app.geometry("600x400")
+
+    imagem = Image.open(r"C:\Users\Jesus\Desktop\projetos\SACM\src\SACM.png")
+    imagem = imagem.resize((900, 500), Image.LANCZOS)
+    imagem_tk = ImageTk.PhotoImage(imagem)
+
+    # Adiciona a imagem à interface
+    label_imagem = tk.Label(app, image=imagem_tk)
+    label_imagem.image = imagem_tk
+    label_imagem.pack()
 
     menubar = ttk.Menu(app)
     app.config(menu=menubar)
