@@ -1,3 +1,7 @@
+### Executável línux
+No terminal, dentro do diretório SACM: cd src/ -> cd dist/ -> cd main/ -> chmod +x main.py -> ./main
+
+
 # Sistema de Agendamento de Consultas Médicas
 
 Um sistema desenvolvido em **Python** utilizando **Tkinter** para interface gráfica e **SQLite** como banco de dados, para agendar consultas médicas. O sistema permite que administradores cadastrem médicos, agendem consultas, gerenciem horários e consultem históricos de atendimento.
