@@ -13,7 +13,6 @@ def criar_interface():
     imagem = imagem.resize((900, 500), Image.LANCZOS)
     imagem_tk = ImageTk.PhotoImage(imagem)
 
-    # Adiciona a imagem à interface
     label_imagem = tk.Label(app, image=imagem_tk)
     label_imagem.image = imagem_tk
     label_imagem.pack()
